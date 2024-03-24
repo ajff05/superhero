@@ -6,9 +6,38 @@ function capturarInformacion() {
 }
 
 function consultarAPI(informacion) {
-    // Aquí iría el código para realizar la consulta a la API
-    // utilizando la información capturada.
-    // Por ejemplo, podrías usar $.ajax, $.get, $.post, etc.
+    $.ajax({
+        type: 'GET',
+        dataType: 'json',
+        url: `https://superheroapi.com/api.php/4905856019427443/${informacion}`,
+        success: function(data) {
+            $('#contenedorTarjetas').empty();
+    
+            data.forEach(function(heroe) {
+                var tarjeta = `
+                    <div class="card" style="width: 18rem;">
+                        <img class="card-img-top" src="${heroe.image.url}" alt="Imagen de ${heroe.name}">
+                        <div class="card-body">
+                            <h5 class="card-title">Nombre: ${heroe.name}</h5>
+                            <p class="card-text">Conexiones: ${heroe.connections['group-affiliation']}</p>
+                            <a href="#" class="btn btn-primary">Más información</a>
+                            <ul>
+                                <li>Publicación: ${heroe.biography.publisher}</li>
+                                <li>Ocupación: ${heroe.work.occupation}</li>
+                                <li>Primera Aparición: ${heroe.biography['first-appearance']}</li>
+                                <li>Altura: ${heroe.appearance.height}</li>
+                                <li>Peso: ${heroe.appearance.weight}</li>
+                                <li>Alianzas: ${heroe.biography.aliases}</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+    
+                $('#contenedorTarjetas').append(tarjeta);
+            });
+        },
+        
+    });
 }
 
 function validarInformacion(informacion) {
@@ -38,17 +67,5 @@ $('#searchForm').submit(function(event) {
 
 
 
-$.ajax({
-    url: 'https://superheroapi.com/api/4905856019427443/id_del_heroe',
-    type: 'GET',
-    dataType: 'json',
-    success: function(data) {
-        // Aquí manejas la respuesta exitosa
-        console.log(data);
-    },
-    error: function(error) {
-        // Aquí manejas los errores de la solicitud
-        console.error(error);
-    }
-});
+
   });
