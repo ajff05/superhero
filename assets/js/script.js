@@ -5,22 +5,20 @@ function capturarInformacion() {
     return heroNumber;
 }
 
-function consultarAPI(informacion) {
+let chart= $('#chartContainer');
+function consultarAPI(capturarInformacion) {
     $.ajax({
         type: 'GET',
         dataType: 'json',
-        url: `https://superheroapi.com/api.php/4905856019427443/${informacion}`,
-        success: function(data) {
+        url: `https://superheroapi.com/api.php/4905856019427443/${capturarInformacion}`,
+        success: function(heroe) {
             $('#contenedorTarjetas').empty();
-    
-            data.forEach(function(heroe) {
                 var tarjeta = `
                     <div class="card" style="width: 18rem;">
                         <img class="card-img-top" src="${heroe.image.url}" alt="Imagen de ${heroe.name}">
                         <div class="card-body">
                             <h5 class="card-title">Nombre: ${heroe.name}</h5>
                             <p class="card-text">Conexiones: ${heroe.connections['group-affiliation']}</p>
-                            <a href="#" class="btn btn-primary">Más información</a>
                             <ul>
                                 <li>Publicación: ${heroe.biography.publisher}</li>
                                 <li>Ocupación: ${heroe.work.occupation}</li>
@@ -34,10 +32,39 @@ function consultarAPI(informacion) {
                 `;
     
                 $('#contenedorTarjetas').append(tarjeta);
-            });
+
+                let datos= []
+
+                for (const key in heroe.powerstats) {
+                    datos.push ({
+                        label: key,
+                        y: parseInt(heroe.powerstats[key])
+                    });
+                }
+
+                var chart = new CanvasJS.Chart("chartContainer", {
+                    theme: "light2", // "light1", "light2", "dark1", "dark2"
+                    animationEnabled: true,
+                    title: {
+                        text: `Estadísticas de poder para ${heroe.name}`
+                    },
+                    data: [{
+                        type: "pie",
+                        startAngle: 25,
+                        toolTipContent: "<b>{label}</b>: {y}",
+                        showInLegend: "true",
+                        legendText: "{label}",
+                        indexLabelFontSize: 16,
+                        indexLabel: "{label} - {y}",
+                        dataPoints: datos
+                    }]
+                });
+                chart.render();
+                
         },
-        
+         
     });
+    $('#chartContainer').append(chart);
 }
 
 function validarInformacion(informacion) {
